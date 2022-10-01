@@ -1,7 +1,7 @@
 const router = require('express').Router(),
       User = require('../../models/User'),
       auth = require('../auth'),
-      checkMember = require('../../middlewares/checkMember'),
+      checkMember = require('../../middlewares/isChatMember'),
       Chat = require('../../models/Chat');
 
 router.use(auth.verifyToken);

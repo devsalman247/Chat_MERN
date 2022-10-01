@@ -1,7 +1,6 @@
 const router = require('express').Router(),
       auth = require('../auth'),
-      User = require('../../models/User'),
-      Friend = require('../../models/Friend');
+      User = require('../../models/User');
 
 router.use(auth.verifyToken);
 
