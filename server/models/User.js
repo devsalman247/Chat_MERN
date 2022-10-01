@@ -17,13 +17,18 @@ const UserSchema = new mongoose.Schema(
             match    : [/\S+@\S+\.\S+/, 'is invalid']
         },
         about : {
-            type : String
+            type     : String,
+            required : [true, 'is required.']
         },
         hash : {
             type     : String,
             required : [true, 'is required']
         },
-        friends : [{
+        requests : [{
+            requestId : {
+                type    : mongoose.Schema.Types.ObjectId,
+                ref     : 'User'
+            },
             status  : {
                 type : Number,
                 enum : [
@@ -31,19 +36,23 @@ const UserSchema = new mongoose.Schema(
                     1,  //pending
                     2   //friends
                 ]
-            },
-            requestId : {
-                type    : mongoose.Schema.Types.ObjectId,
-                ref     : 'User'
-            }, 
-            friendDetails : {
-                type    : mongoose.Schema.Types.ObjectId,
-                ref     : 'Friend'
             }
+        }],
+        friends : [{
+            type    : mongoose.Schema.Types.ObjectId,
+            ref     : 'User'
         }],
         groups : [{
             type : mongoose.Schema.Types.ObjectId,
             ref  : 'Group'
+        }],
+        blocked : [{
+            type    : mongoose.Schema.Types.ObjectId,
+            ref     : 'User'
+        }],
+        archivedChats : [{
+            type : mongoose.Schema.Types.ObjectId,
+            ref  : 'Chat'
         }],
         salt : {
             type     : String,
@@ -86,11 +95,14 @@ UserSchema.methods.toAuthJSON = function() {
 
 UserSchema.methods.toJSON = function() {
     return {
+        id : this.id,
         name  : this.name,
         email : this.email,
         about : this.about,
+        requests : this.requests,
         friends : this.friends,
-        groups  : this.groups
+        groups  : this.groups,
+        archivedChats : this.archivedChats
     }
 }
 
