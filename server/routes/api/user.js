@@ -64,7 +64,7 @@ router.post("/login", (req, res, next) => {
 router.get("/profile", auth.verifyToken, (req, res, next) => {
   User
     .findById(req.user.id)
-    .then((error, user) => {
+    .then((user, error) => {
       if (error) {
         res.send({ error: { message: error.message } });
       }
