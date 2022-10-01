@@ -64,16 +64,13 @@ router.post("/login", (req, res, next) => {
 router.get("/profile", auth.verifyToken, (req, res, next) => {
   User
     .findById(req.user.id)
-    .populate('friends', 'name about friends groups')
-    .populate('groups', 'name description admins members createdAt createdBy')
-    .populate('blocked', 'name about friends groups')
-    .populate('archivedChats', 'participants category')
-    .exec((error, user) => {
+    .then((error, user) => {
       if (error) {
         res.send({ error: { message: error.message } });
       }
       res.send(user);
-    });
+    })
+    .catch(err => res.send({ error: { message: err.message } }));
 });
 
 module.exports = router;

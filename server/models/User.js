@@ -72,6 +72,18 @@ UserSchema.methods.validPassword = function(password) {
     return bcrypt.compareSync(password, this.hash);
 };
 
+const autoPopulate = function (next) {
+    this.populate('friends')
+    this.populate('groups')
+    this.populate('blocked')
+    this.populate('archivedChats')
+    next();
+  };
+  
+UserSchema.pre('findOne', autoPopulate);
+UserSchema.pre('find', autoPopulate);
+UserSchema.pre('findById', autoPopulate);
+
 UserSchema.methods.generateJWT = function() {
     return jwt.sign(
         {
