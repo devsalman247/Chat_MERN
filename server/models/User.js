@@ -33,8 +33,7 @@ const UserSchema = new mongoose.Schema(
                 type : Number,
                 enum : [
                     0,  //requested
-                    1,  //pending
-                    2   //friends
+                    1  //pending
                 ]
             }
         }],
@@ -102,6 +101,7 @@ UserSchema.methods.toJSON = function() {
         requests : this.requests,
         friends : this.friends,
         groups  : this.groups,
+        blocked : this.blocked,
         archivedChats : this.archivedChats
     }
 }
