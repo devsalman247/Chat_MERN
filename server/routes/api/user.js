@@ -79,18 +79,16 @@ router.get("/profile", auth.verifyToken, (req, res, next) => {
 });
 
 router.post("/search", auth.verifyToken, (req, res, next) => {
-  console.log(req.body);
   if(!req.body.name) {
     next(new BadRequestResponse({message : "Enter a name to search"}));
   }else {
-    User.find({name : {$regex : `^${req.body.name}`, $options : 'i'}}, (error, user) => {
+    User.find({name : {$regex : `^${req.body.name}`, $options : 'i'}}, (error, users) => {
       if(error) {
         next(new BadRequestResponse(error.message));
-      }else if(!user) {
+      }else if(!users) {
         next(new BadRequestResponse("User not found"));
       }else {
-        console.log(user);
-        res.send(user);
+        res.send(users.filter(user => user.id!==req.user.id));
       }
     })
   }
