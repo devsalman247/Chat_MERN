@@ -30,15 +30,24 @@ function Search() {
     fetchUsers(value);
   }
 
-  function sendRequest(userId) {
-    if(userId) {
-        axios.post("http://localhost:3000/api/friend/add")
-            .then(res => {
-                if(res.status===200) {
-                    alert("Request has been sent to user");
-                }
-            })
-            .catch(err => console.log(err))
+  function sendRequest(userId, btn) {
+    if (userId) {
+      axios
+        .post(
+          "http://localhost:3000/api/friend/add",
+          { id: userId },
+          { headers: { Authorization: `Token ${token}` } }
+        )
+        .then((res) => {
+          if (res.status === 200) {
+            btn.classList.remove("bg-sky-500", "text-white");
+            btn.classList.add("bg-gray-500", "text-white", "hover:cursor-not-allowed");
+            btn.textContent = "Request sent";
+            btn.disabled = true;
+            alert("Request has been sent to user");
+          }
+        })
+        .catch((err) => console.log(err));
     }
   }
 
@@ -71,7 +80,10 @@ function Search() {
                     <h5>Name : {obj.name}</h5>
                     <h5>Email : {obj.email}</h5>
                     <h5>About : {obj.about}</h5>
-                    <button className="bg-sky-500 text-white px-3 py-1 mt-2" onClick={() => sendRequest(obj.id)}>
+                    <button
+                      className="bg-sky-500 text-white px-3 py-1 mt-2"
+                      onClick={(e) => sendRequest(obj.id,e.target)}
+                    >
                       Add Friend
                     </button>
                   </div>
