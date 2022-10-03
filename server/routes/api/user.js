@@ -3,13 +3,18 @@ const router = require("express").Router(),
       strategy = require("../../config/passport"),
       auth = require("../auth"),
       User = require("../../models/User");
+      const {
+        OkResponse,
+        BadRequestResponse,
+        UnauthorizedResponse,
+      } = require("express-http-response");
 
 passport.use(strategy);
 
 router.post("/signup", (req, res, next) => {
   const { name, email, password, about } = req.body;
   if (!email || !password || !name) {
-    return res.status(422).send({ error: "Please provide all input fields!" });
+    return next(new BadRequestResponse({ message : "Please provide all input fields!" }));
   }
   const user = new User({
     name,
