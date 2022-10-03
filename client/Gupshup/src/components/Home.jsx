@@ -7,11 +7,6 @@ function Home({setIsLoggedIn}) {
   const token = localStorage.getItem("chatToken");
 
   const fetchData = () => {
-    const loginEl = document.getElementById("login");
-    const signupEl = document.getElementById("signup");
-    loginEl.classList.add("hidden");
-    signupEl.classList.add("hidden");
-
     return axios
       .get("http://localhost:3000/api/user/profile", {
         headers: { Authorization: `Token ${token}` },
