@@ -1,24 +1,23 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function Home() {
+function Home({setIsLoggedIn}) {
   const navigate = useNavigate();
   const token = localStorage.getItem("chatToken");
-  const [res, setRes] = useState("");
 
   const fetchData = () => {
     const loginEl = document.getElementById("login");
     const signupEl = document.getElementById("signup");
     loginEl.classList.add("hidden");
     signupEl.classList.add("hidden");
-    
+
     return axios
       .get("http://localhost:3000/api/user/profile", {
         headers: { Authorization: `Token ${token}` },
       })
       .then((res) => {
-        setRes(res.data.name);
+        setIsLoggedIn(true);
       })
       .catch((error) => {
         navigate("login");
@@ -33,7 +32,7 @@ function Home() {
 
   return (
     <div className="flex items-center flex-col h-full">
-      <h2>{res}</h2>
+      
     </div>
   );
 }

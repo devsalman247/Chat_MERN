@@ -1,5 +1,10 @@
 const jwt = require("jsonwebtoken"),
       secret = require("../config/env/index").secret;
+      const {
+        OkResponse,
+        BadRequestResponse,
+        UnauthorizedResponse,
+      } = require("express-http-response");
 
 const verifyToken = function (req, res, next) {
   const { authorization } = req.headers;
@@ -11,17 +16,17 @@ const verifyToken = function (req, res, next) {
     try {
       jwt.verify(token, secret, (error, data) => {
         if(error) {
-            res.send({error : {message : "Log in first"}});
+            next(new BadRequestResponse({error : {message : "Log in first"}}));
         }else {
             req.user = data;
             next();
         }
       });
     } catch {
-      res.send({ error: { message: "Token expired.Please log in again!!" } });
+      next(new BadRequestResponse({ error: { message: "Token expired.Please log in again!!" } }));
     }
   } else {
-    res.send("You've to log in first to access this service.");
+    next(new BadRequestResponse("You've to log in first to access this service."));
   }
 };
 

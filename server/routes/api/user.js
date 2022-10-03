@@ -78,4 +78,22 @@ router.get("/profile", auth.verifyToken, (req, res, next) => {
     .catch((err) => res.send({ error: { message: err.message } }));
 });
 
+router.post("/search", auth.verifyToken, (req, res, next) => {
+  console.log(req.body);
+  if(!req.body.name) {
+    next(new BadRequestResponse({message : "Enter a name to search"}));
+  }else {
+    User.find({name : {$regex : `^${req.body.name}`, $options : 'i'}}, (error, user) => {
+      if(error) {
+        next(new BadRequestResponse(error.message));
+      }else if(!user) {
+        next(new BadRequestResponse("User not found"));
+      }else {
+        console.log(user);
+        res.send(user);
+      }
+    })
+  }
+})
+
 module.exports = router;
