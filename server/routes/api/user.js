@@ -64,8 +64,7 @@ router.post("/login", (req, res, next) => {
     } else {
       next(new UnauthorizedResponse(info));
     }
-  });
-  next(new OkResponse("hello"));
+  })(req, res, next);
 });
 
 router.get("/profile", auth.verifyToken, (req, res, next) => {
