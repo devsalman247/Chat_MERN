@@ -25,17 +25,20 @@ function Login() {
       return alert("Password cannot be empty");
     } else {
       axios
-        .post("http://localhost:3000/todo/login", { email, password })
+        .post("http://localhost:3000/api/user/login", { email, password })
         .then((res) => {
           if (res.status === 200) {
-            localStorage.setItem("todoToken",res.data.user.token);
+            localStorage.setItem("chatToken", res.data.user.token);
             alert("Login successful");
             return navigate("/");
           } else {
             return alert("Signup failed try again");
           }
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          alert("Invalid credentials!!");
+          console.log(err);
+        });
     }
   };
 
@@ -64,7 +67,7 @@ function Login() {
             onChange={(e) => handleInputChange(e)}
           />
           <button
-            className="text-sky-800 bg-white mt-2 focus:outline-none"
+            className="text-sky-800 bg-white mt-2 p-2 rounded focus:outline-none"
             type="submit"
             onClick={() => handleSubmit()}
           >
