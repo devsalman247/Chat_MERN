@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function Login() {
+function Login({setIsLoggedIn}) {
   let navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,6 +30,7 @@ function Login() {
           if (res.status === 200) {
             localStorage.setItem("chatToken", res.data.user.token);
             alert("Login successful");
+            setIsLoggedIn(true);
             return navigate("/");
           } else {
             return alert("Signup failed try again");
@@ -44,7 +45,6 @@ function Login() {
 
   return (
     <>
-      <Nav />
       <div className="w-1/3 m-auto h-94 mt-40 bg-sky-400 rounded p-4 text-xl">
         <div className="mb-2 text-center text-2xl">LOGIN</div>
         <div className=" flex flex-col gap-4">

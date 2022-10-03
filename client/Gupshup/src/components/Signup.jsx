@@ -58,7 +58,6 @@ function Signup() {
 
   return (
     <>
-      <Nav />
       <div className="w-1/3 m-auto h-94 mt-30 bg-sky-400 rounded p-4 text-xl">
         <div className="mb-2 text-center text-2xl">SIGNUP</div>
         <div className=" flex flex-col gap-4">

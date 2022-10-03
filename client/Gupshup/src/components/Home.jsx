@@ -34,7 +34,6 @@ function Home() {
 
   return (
     <div className="flex items-center flex-col h-full">
-      <Nav />
       <h2>{res}</h2>
     </div>
   );
