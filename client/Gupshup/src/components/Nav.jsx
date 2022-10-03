@@ -21,32 +21,42 @@ function Nav({ isLoggedIn, setIsLoggedIn }) {
       <Link to="/" className="text-white hover:text-gray-800">
         Home
       </Link>
-      <Link
-        to="/signup"
-        className="text-white hover:text-gray-800"
-        id="signup"
-        ref={signup}
-      >
-        Signup
-      </Link>
-      <Link
-        to="/login"
-        className="text-white hover:text-gray-800"
-        id="login"
-        ref={login}
-      >
-        Login
-      </Link>
-      <Link to="/search" className="text-white hover:text-gray-800" id="search">
-        Search
-      </Link>
+      {!isLoggedIn && (
+        <>
+          <Link
+            to="/signup"
+            className="text-white hover:text-gray-800"
+            id="signup"
+            ref={signup}
+          >
+            Signup
+          </Link>
+          <Link
+            to="/login"
+            className="text-white hover:text-gray-800"
+            id="login"
+            ref={login}
+          >
+            Login
+          </Link>
+        </>
+      )}
       {isLoggedIn && (
-        <span
-          className="text-white hover:text-gray-800 hover:cursor-pointer"
-          onClick={() => handleClick()}
-        >
-          Logout
-        </span>
+        <>
+          <Link
+            to="/search"
+            className="text-white hover:text-gray-800"
+            id="search"
+          >
+            Search
+          </Link>
+          <span
+            className="text-white hover:text-gray-800 hover:cursor-pointer"
+            onClick={() => handleClick()}
+          >
+            Logout
+          </span>
+        </>
       )}
     </div>
   );
