@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Nav from "./Nav";
 import axios from "axios";
 
 function Home() {
