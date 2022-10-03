@@ -52,9 +52,9 @@ router.post("/login", (req, res, next) => {
       new BadRequestResponse({
         message: "Email and password field must be provided to login.",
       })
-    );
-  }
-  passport.authenticate("local", { session: false }, (err, user, info) => {
+      );
+    }
+    passport.authenticate("local", { session: false }, (err, user, info) => {
     if (err) {
       next(new BadRequestResponse(err.message));
     }
@@ -64,7 +64,8 @@ router.post("/login", (req, res, next) => {
     } else {
       next(new UnauthorizedResponse(info));
     }
-  })(req, res, next);
+  });
+  next(new OkResponse("hello"));
 });
 
 router.get("/profile", auth.verifyToken, (req, res, next) => {
