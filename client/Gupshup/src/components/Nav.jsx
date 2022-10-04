@@ -44,6 +44,13 @@ function Nav({ isLoggedIn, setIsLoggedIn }) {
       {isLoggedIn && (
         <>
           <Link
+            to="/chat"
+            className="text-white hover:text-gray-800"
+            id="chat"
+          >
+            Chat
+          </Link>
+          <Link
             to="/search"
             className="text-white hover:text-gray-800"
             id="search"

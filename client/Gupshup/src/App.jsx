@@ -7,6 +7,7 @@ import NoMatch from "./components/NoMatch";
 import Nav from "./components/Nav";
 import Search from "./components/Search";
 import Requests from "./components/Requests";
+import Chat from "./components/Chat";
 import axios from "axios";
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
       <Nav isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
       <Routes>
         <Route path="/" element={<Home setIsLoggedIn={setIsLoggedIn}/>}/>
+        <Route path="chat" element={<Chat />}/>
         <Route path="login" element={<Login setIsLoggedIn={setIsLoggedIn}/>}/>
         <Route path="signup" element={<Signup />}/>
         <Route path="search" element={<Search />}/>
