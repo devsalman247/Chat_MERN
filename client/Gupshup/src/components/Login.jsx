@@ -28,7 +28,7 @@ function Login({setIsLoggedIn}) {
         .post("http://localhost:3000/api/user/login", { email, password })
         .then((res) => {
           if (res.status === 200) {
-            localStorage.setItem("chatToken", res.data.user.token);
+            localStorage.setItem("chatToken", res.data.data.user.token);
             alert("Login successful");
             setIsLoggedIn(true);
             return navigate("/");

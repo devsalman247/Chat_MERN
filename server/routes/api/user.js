@@ -59,8 +59,8 @@ router.post("/login", (req, res, next) => {
       next(new BadRequestResponse(err.message));
     }
     if (user) {
-      res.send({user : user.toAuthJSON()});
-      // next(new OkResponse({ user: user.toAuthJSON() }));
+      // res.send({user : user.toAuthJSON()});
+      next(new OkResponse({ user: user.toAuthJSON() }));
     } else {
       next(new UnauthorizedResponse(info));
     }
