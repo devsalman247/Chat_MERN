@@ -4,27 +4,28 @@ const router = require("express").Router(),
   Chat = require("../../models/Chat");
 const {
   OkResponse,
-  BadRequestResponse,
-  UnauthorizedResponse,
+  BadRequestResponse
 } = require("express-http-response");
 
 router.use(auth.verifyToken);
 
-router.get("/", checkMember, (req, res, next) => {
+router.get("/:id", checkMember, (req, res, next) => {
   const { chat } = req;
-  res.send(chat);
+  next(new OkResponse(chat));
 });
 
 router.post("/start", (req, res, next) => {
   const { id, message } = req.body;
   if (!id || !message) {
-    res.send({
-      error: { message: "Please provide id and message to start chat" },
-    });
+    next(
+      new BadRequestResponse({
+        error: { message: "Please provide id and message to start chat" },
+      })
+    );
   }
   Chat.findOne({ participants: [id, req.user.id] }, (err, foundChat) => {
     if (err) {
-      res.send({ error: { message: err.message } });
+      next(new BadRequestResponse({ error: { message: err.message } }));
     } else if (!foundChat) {
       const chat = new Chat();
       chat.category = 1;
@@ -34,11 +35,11 @@ router.post("/start", (req, res, next) => {
         sentBy: req.user.id,
         sentAt: Date.now(),
       });
-      chat.save((error, chat) => {
+      chat.save((error, savedChat) => {
         if (error) {
-          res.send({ error: { message: error.message } });
+          next(new BadRequestResponse({ error: { message: err.message } }));
         } else {
-          res.send({ success: true, message: chat });
+          next(new OkResponse({ success: true, chat: savedChat }));
         }
       });
     } else {
@@ -51,11 +52,11 @@ router.post("/start", (req, res, next) => {
       if (deletedChatFor > -1) {
         foundChat.deletedBy.splice(deletedChatFor, 1);
       }
-      foundChat.save((error, data) => {
+      foundChat.save((error, savedChat) => {
         if (error) {
-          res.send({ error: { message: error.message } });
+          next(new BadRequestResponse({ error: { message: err.message } }));
         } else {
-          res.send({ success: true, message: data });
+          next(new OkResponse({ success: true, chat: savedChat }));
         }
       });
     }
@@ -65,14 +66,20 @@ router.post("/start", (req, res, next) => {
 router.delete("/delete", checkMember, (req, res, next) => {
   const { msgId } = req.body;
   if (!msgId) {
-    res.send({ error: { message: "Please provide message id." } });
+    next(
+      new BadRequestResponse({
+        error: { message: "Please provide message id." },
+      })
+    );
   }
   const { chat } = req;
   const index = chat.messages.findIndex(
     (obj) => obj.id === msgId && !obj.deletedBy.includes(req.user.id)
   );
   if (index === -1) {
-    res.send({ error: { message: "Message is not present." } });
+    next(
+      new BadRequestResponse({ error: { message: "Message is not present." } })
+    );
   } else {
     chat.messages[index].deletedBy.push(req.user.id);
     if (chat.messages[index].deletedBy.length === chat.participants.length) {
@@ -80,12 +87,14 @@ router.delete("/delete", checkMember, (req, res, next) => {
     }
     chat.save((err, deletedChat) => {
       if (err) {
-        res.send({ error: { message: err.message } });
+        next(new BadRequestResponse({ error: { message: err.message } }));
       } else {
-        res.send({
-          success: true,
-          message: "Message has been deleted successfully.",
-        });
+        next(
+          new OkResponse({
+            success: true,
+            message: "Message has been deleted successfully.",
+          })
+        );
       }
     });
   }
@@ -100,13 +109,15 @@ router.delete("/clear", checkMember, (req, res, next) => {
       if (chat.deletedBy.length === chat.participants.length) {
         Chat.findByIdAndDelete(chat.id, (err, deleted) => {
           if (err) {
-            res.send({
-              error: {
-                message: "Chat couldn't be deleted. Please try again!!",
-              },
-            });
+            next(
+              new BadRequestResponse({
+                error: {
+                  message: "Chat couldn't be deleted. Please try again!!",
+                },
+              })
+            );
           } else {
-            res.send({ message: "chat deleted successfully" });
+            next(new OkResponse({ message: "chat deleted successfully" }));
           }
         });
       }
@@ -114,9 +125,13 @@ router.delete("/clear", checkMember, (req, res, next) => {
   });
   chat.save((err) => {
     if (err) {
-      res.send({ message: "action can't be completed. Please try again!!" });
+      next(
+        new BadRequestResponse({
+          message: "action can't be completed. Please try again!!",
+        })
+      );
     } else {
-      res.send({ message: "chat deleted successfully" });
+      next(new OkResponse({ message: "chat deleted successfully" }));
     }
   });
 });
@@ -124,31 +139,37 @@ router.delete("/clear", checkMember, (req, res, next) => {
 router.put("/update", checkMember, (req, res, next) => {
   const { msgId, message } = req.body;
   if ((!msgId, !message)) {
-    res.send({
-      error: { message: "Please provide message id and message to update." },
-    });
+    next(
+      new BadRequestResponse({
+        error: { message: "Please provide message id and message to update." },
+      })
+    );
   }
   let { chat } = req;
   const index = chat.messages.findIndex(
     (obj) => obj.id === msgId && !obj.deletedBy.includes(req.user.id)
   );
   if (index === -1) {
-    res.send({ error: { message: "Message is not present." } });
+    next(
+      new BadRequestResponse({ error: { message: "Message is not present." } })
+    );
   } else {
     chat.messages[index].body = message;
     chat.messages[index].isEdited = true;
     chat.messages[index].editedBy = req.user.id;
     chat.save((err, updatedChat) => {
       if (err) {
-        res.send({ error: { message: err.message } });
+        next(new BadRequestResponse({ error: { message: err.message } }));
       } else {
-        res.send({
-          success: true,
-          more: {
-            message: "Message has been updated successfully.",
-            data: updatedChat,
-          },
-        });
+        next(
+          new OkResponse({
+            success: true,
+            more: {
+              message: "Message has been updated successfully.",
+              data: updatedChat,
+            },
+          })
+        );
       }
     });
   }
@@ -161,9 +182,9 @@ router.get("/search", checkMember, (req, res, next) => {
     (obj) => obj.body.toLowerCase().indexOf(message) > -1
   );
   if (filteredChat) {
-    res.send(filteredChat);
+    next(new OkResponse(filteredChat));
   } else {
-    res.send({ error: { message: "no messages found" } });
+    next(new BadRequestResponse({ error: { message: "no messages found" } }));
   }
 });
 
