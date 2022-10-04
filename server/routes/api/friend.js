@@ -24,8 +24,8 @@ router.post("/add", (req, res, next) => {
         const index = user.requests.findIndex(
           (user) => user.requestId === req.user.id
         );
-        if (index === -1) {
-          next(new OkResponse('Request has been sent'));
+        if (index !== -1) {
+          next(new OkResponse("Request has been sent"));
         } else {
           user.requests.push({
             requestId: req.user.id,
@@ -98,7 +98,7 @@ router.post("/new", (req, res, next) => {
   }
 });
 
-router.post("/requests", auth.verifyToken, (req, res, next) => {
+router.get("/requests", auth.verifyToken, (req, res, next) => {
   User.findById(req.user.id, (error, user) => {
     if (error) {
       next(new BadRequestResponse("Something went wrong..Try again!"));
@@ -106,21 +106,71 @@ router.post("/requests", auth.verifyToken, (req, res, next) => {
       next(new BadRequestResponse(`Requests couldn't be processed.`));
     } else if (user) {
       const reqArr = [];
-      user.requests.forEach(obj => {
-        reqArr.push(obj.requestId)});
-      if(reqArr.length!==0) {
-        User.find({_id : { $in: reqArr }}, (err, users) => {
-          if(err) {
+      user.requests.forEach((obj) => {
+        if (obj.status === 0) {
+          reqArr.push(obj.requestId);
+        }
+      });
+      if (reqArr.length !== 0) {
+        User.find({ _id: { $in: reqArr } }, (err, users) => {
+          if (err) {
             next(new BadRequestResponse("Something went wrong..Try again!"));
-          }else if(users) {
+          } else if (users) {
             next(new OkResponse(users));
           }
-        })
-      }else {
-        next(new OkResponse('No request found'));
+        });
+      } else {
+        next(new OkResponse("No request found"));
       }
     }
   });
+});
+
+router.post("/cancel", auth.verifyToken, (req, res, next) => {
+  if (!req.body.id) {
+    next(new BadRequestResponse("Please provide user id to send request"));
+  } else {
+    User.findById(req.body.id, (error, user) => {
+      if (error) {
+        next(
+          new BadRequestResponse(`Request couldn't be processed..Try again!`)
+        );
+      } else if (!user) {
+        next(new BadRequestResponse("User not found!"));
+      } else if (user) {
+        const index = user.requests.findIndex(
+          (user) => user.requestId == req.user.id
+        );
+        if (index !== -1) {
+          User.findById(req.user.id, (err, myProfile) => {
+            if (err) {
+              next(
+                new BadRequestResponse(
+                  `Request couldn't be processed..Try again!`
+                )
+              );
+            } else if (myProfile) {
+              const userIndex = myProfile.requests.findIndex(
+                (user) => user.requestId == req.body.id
+              );
+              if (userIndex !== -1) {
+                myProfile.requests.splice(userIndex, 1);
+                user.requests.splice(index, 1);
+                myProfile.save();
+                user.save();
+                console.log('Request cancelled');
+                next(new OkResponse('Request cancelled'));
+              } else {
+                next(new BadRequestResponse("User not found"));
+              }
+            }
+          });
+        } else {
+          next(new BadRequestResponse("Request couldn't be processed"));
+        }
+      }
+    });
+  }
 });
 
 module.exports = router;
