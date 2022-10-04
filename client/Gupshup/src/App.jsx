@@ -6,6 +6,7 @@ import Login from "./components/Login";
 import NoMatch from "./components/NoMatch";
 import Nav from "./components/Nav";
 import Search from "./components/Search";
+import Requests from "./components/Requests";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -18,6 +19,7 @@ function App() {
         <Route path="login" element={<Login setIsLoggedIn={setIsLoggedIn}/>}/>
         <Route path="signup" element={<Signup />}/>
         <Route path="search" element={<Search />}/>
+        <Route path="requests" element={<Requests />}/>
         <Route path="*" element={<NoMatch />}/>
       </Routes>
     </div>

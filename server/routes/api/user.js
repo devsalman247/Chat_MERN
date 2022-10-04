@@ -38,7 +38,7 @@ router.post("/signup", (req, res, next) => {
           new BadRequestResponse({ message: "Signed up failed.Try again!" })
         );
       }
-      res.send(user.toAuthJSON());
+      next(new OkResponse(user.toAuthJSON()));
     })
     .catch((err) => {
       next(new BadRequestResponse(err.message));
@@ -59,7 +59,6 @@ router.post("/login", (req, res, next) => {
       next(new BadRequestResponse(err.message));
     }
     if (user) {
-      // res.send({user : user.toAuthJSON()});
       next(new OkResponse({ user: user.toAuthJSON() }));
     } else {
       next(new UnauthorizedResponse(info));

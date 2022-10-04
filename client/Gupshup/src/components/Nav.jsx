@@ -50,6 +50,13 @@ function Nav({ isLoggedIn, setIsLoggedIn }) {
           >
             Search
           </Link>
+          <Link
+            to="/requests"
+            className="text-white hover:text-gray-800"
+            id="requests"
+          >
+            Requests
+          </Link>
           <span
             className="text-white hover:text-gray-800 hover:cursor-pointer"
             onClick={() => handleClick()}
