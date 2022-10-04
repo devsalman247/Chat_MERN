@@ -158,7 +158,6 @@ router.post("/cancel", auth.verifyToken, (req, res, next) => {
                 user.requests.splice(index, 1);
                 myProfile.save();
                 user.save();
-                console.log('Request cancelled');
                 next(new OkResponse('Request cancelled'));
               } else {
                 next(new BadRequestResponse("User not found"));
