@@ -158,7 +158,7 @@ router.post("/cancel", auth.verifyToken, (req, res, next) => {
                 user.requests.splice(index, 1);
                 myProfile.save();
                 user.save();
-                next(new OkResponse('Request cancelled'));
+                next(new OkResponse("Request cancelled"));
               } else {
                 next(new BadRequestResponse("User not found"));
               }
@@ -174,15 +174,27 @@ router.post("/cancel", auth.verifyToken, (req, res, next) => {
 
 router.get("/all", auth.verifyToken, (req, res, next) => {
   User.findById(req.user.id, (error, user) => {
-    console.log(user.requests);
-    if(error) {
+    console.log('newest');
+    if (error) {
       next(new BadRequestResponse(error.message));
-    }else if(!user) {
-      next(new BadRequestResponse('Something went wrong!!'));
-    }else {
-      console.log(user.requests);
+    } else if (!user) {
+      next(new BadRequestResponse("Something went wrong!!"));
+    } else if(user) {
+      console.log(user)
+      if (user.friends.length !== 0) {
+        User.find({ _id: { $in: user.friends } }, (err, users) => {
+          if (err) {
+            next(new BadRequestResponse("Something went wrong..Try again!"));
+          } else if (users) {
+            next(new OkResponse(users));
+          }
+        });
+      }else {
+        console.log('blah blah');
+        next(new OkResponse([]));
+      }
     }
-  })
+  });
 });
 
 module.exports = router;
