@@ -53,17 +53,18 @@ router.post("/login", (req, res, next) => {
         message: "Email and password field must be provided to login.",
       })
       );
+    }else {
+      passport.authenticate("local", { session: false }, (err, user, info) => {
+      if (err) {
+        next(new BadRequestResponse(err.message));
+      }
+      if (user) {
+        next(new OkResponse({ user: user.toAuthJSON() }));
+      } else {
+        next(new UnauthorizedResponse(info));
+      }
+    })(req, res, next);
     }
-    passport.authenticate("local", { session: false }, (err, user, info) => {
-    if (err) {
-      next(new BadRequestResponse(err.message));
-    }
-    if (user) {
-      next(new OkResponse({ user: user.toAuthJSON() }));
-    } else {
-      next(new UnauthorizedResponse(info));
-    }
-  })(req, res, next);
 });
 
 router.get("/profile", auth.verifyToken, (req, res, next) => {
