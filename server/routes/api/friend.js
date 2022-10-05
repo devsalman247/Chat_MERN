@@ -117,6 +117,8 @@ router.get("/requests", auth.verifyToken, (req, res, next) => {
             next(new BadRequestResponse("Something went wrong..Try again!"));
           } else if (users) {
             next(new OkResponse(users));
+          }else if(!users) {
+            next(new BadRequestResponse("Something went wrong..Try again!"));
           }
         });
       } else {
