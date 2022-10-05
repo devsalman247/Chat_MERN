@@ -20,6 +20,8 @@ mongoose
     console.log(`connected to db in Dev environment`);
   });
 
+mongoose.set('debug',true);
+
 require("../server/models/User");
 require("../server/models/Chat");
 require("../server/models/Group");
