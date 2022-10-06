@@ -38,16 +38,14 @@ const UserSchema = new mongoose.Schema(
             }
         }],
         friends : [{
-            type    : mongoose.Schema.Types.ObjectId,
-            ref     : 'User'
+            type    : mongoose.Schema.Types.ObjectId
         }],
         groups : [{
             type : mongoose.Schema.Types.ObjectId,
             ref  : 'Group'
         }],
         blocked : [{
-            type    : mongoose.Schema.Types.ObjectId,
-            ref     : 'User'
+            type    : mongoose.Schema.Types.ObjectId
         }],
         archivedChats : [{
             type : mongoose.Schema.Types.ObjectId,
@@ -73,9 +71,7 @@ UserSchema.methods.validPassword = function(password) {
 };
 
 const autoPopulate = function (next) {
-    this.populate('friends')
     this.populate('groups')
-    this.populate('blocked')
     this.populate('archivedChats')
     next();
   };
