@@ -1,7 +1,7 @@
-import Nav from "./Nav";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Swal from 'sweetalert2';
 
 function Signup() {
   let navigate = useNavigate();
@@ -26,6 +26,31 @@ function Signup() {
     }
   };
 
+  function showSuccess() {
+    Swal.fire(
+      'Signup successful!',
+      `You're being redirected to login page`,
+      'success'
+    )
+  }
+
+  function showError() {
+    Swal.fire({
+      toast: true,
+      icon: 'error',
+      title: 'Signup failed..Try again!',
+      animation: false,
+      position: 'bottom',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    })
+  }
+
   const handleSubmit = () => {
     if (!name) {
       return alert("Name cannot be empty");
@@ -43,14 +68,14 @@ function Signup() {
         })
         .then((res) => {
           if (res.status === 200) {
-            alert("Signup successful");
+            showSuccess();
             return navigate("/login");
           } else {
-            return alert("Signup failed try again");
+            showError();
           }
         })
         .catch((err) => {
-          alert("Email is already registered...");
+          showError();
           console.log(err);
         });
     }

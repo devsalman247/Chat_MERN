@@ -9,11 +9,22 @@ import Search from "./components/Search";
 import Requests from "./components/Requests";
 import Chat from "./components/Chat";
 import axios from "axios";
+import Swal from 'sweetalert2';
 
 function App() {
   const navigate = useNavigate();
   const token = localStorage.getItem("chatToken");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  function loginFailed() {
+    Swal.fire({
+      position: 'center',
+      icon: 'error',
+      title: "Login failed!",
+      showConfirmButton: false,
+      timer: 1500
+    })
+  }
 
   const fetchData = () => {
     return axios
@@ -25,7 +36,7 @@ function App() {
       })
       .catch((error) => {
         navigate("login");
-        alert("Session Expired...Please login again!!");
+        loginFailed();
         console.log(error.message);
       });
   };

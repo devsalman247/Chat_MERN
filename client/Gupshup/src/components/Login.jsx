@@ -1,7 +1,7 @@
-import Nav from "./Nav";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Swal from 'sweetalert2';
 
 function Login({setIsLoggedIn}) {
   let navigate = useNavigate();
@@ -18,6 +18,22 @@ function Login({setIsLoggedIn}) {
     }
   };
 
+  function showSuccess() {
+    Swal.fire(
+      'Login successful!',
+      `Let's do chat now..`,
+      'success'
+    )
+  }
+
+  function showError() {
+    Swal.fire(
+      'Login failed!',
+      `Invalid credentials`,
+      'error'
+    )
+  }
+
   const handleSubmit = () => {
     if (!email) {
       return alert("Email cannot be empty");
@@ -29,15 +45,15 @@ function Login({setIsLoggedIn}) {
         .then((res) => {
           if (res.status === 200) {
             localStorage.setItem("chatToken", res.data.data.user.token);
-            alert("Login successful");
+            showSuccess();
             setIsLoggedIn(true);
             return navigate("/");
           } else {
-            return alert("Signup failed try again");
+            showError();
           }
         })
         .catch((err) => {
-          alert("Invalid credentials!!");
+          showError();
           console.log(err);
         });
     }
