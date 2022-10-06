@@ -26,8 +26,7 @@ const UserSchema = new mongoose.Schema(
         },
         requests : [{
             requestId : {
-                type    : mongoose.Schema.Types.ObjectId,
-                ref     : 'User'
+                type    : mongoose.Schema.Types.ObjectId
             },
             status  : {
                 type : Number,
