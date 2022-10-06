@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useRef } from "react";
+import Swal from 'sweetalert2';
 
 function Nav({ isLoggedIn, setIsLoggedIn }) {
   const navigate = useNavigate();
@@ -9,11 +10,11 @@ function Nav({ isLoggedIn, setIsLoggedIn }) {
 
   function handleClick() {
     localStorage.removeItem("chatToken");
+    Swal.fire('',`You've been logged out successfully!`,'success');
     setIsLoggedIn(false);
     navigate("/login", { replace: true });
     login.current.classList.remove("hidden");
     signup.current.classList.remove("hidden");
-    alert("You've been logged out!!");
   }
 
   return (

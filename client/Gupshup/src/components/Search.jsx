@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import Swal from 'sweetalert2';
 
 function Search() {
   const [searchList, setSearchList] = useState([]);
@@ -30,6 +31,23 @@ function Search() {
     fetchUsers(value);
   }
 
+  function showSuccess() {
+    Swal.fire({
+      toast: true,
+      icon: 'success',
+      title: 'Request has been sent',
+      animation: false,
+      position: 'bottom',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    })
+  }
+
   function sendRequest(userId, btn) {
     if (userId) {
       axios
@@ -44,7 +62,7 @@ function Search() {
             btn.classList.add("bg-gray-500", "text-white", "hover:cursor-not-allowed");
             btn.textContent = "Request sent";
             btn.disabled = true;
-            alert("Request has been sent to user");
+            showSuccess();
           }
         })
         .catch((err) => console.log(err));

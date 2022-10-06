@@ -1,11 +1,44 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 function Requests() {
   const navigate = useNavigate();
   const token = localStorage.getItem("chatToken");
   const [userRequests, setUserRequests] = useState([]);
+
+  const showSuccess = Swal.mixin({
+    toast: true,
+    icon: 'success',
+    title: 'General Title',
+    animation: false,
+    position: 'bottom',
+    showConfirmButton: false,
+    timer: 2000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+  });
+
+  function showError() {
+    Swal.fire({
+      toast: true,
+      icon: 'error',
+      title: `You've been logged out..Login again!`,
+      animation: false,
+      position: 'bottom',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    })
+  }
 
   useEffect(() => {
     axios
@@ -19,7 +52,7 @@ function Requests() {
       })
       .catch((err) => {
         navigate("/login");
-        alert("Session Expired...Please login again!!");
+        showError();
         console.log(err.message);
       });
   }, []);
@@ -37,7 +70,9 @@ function Requests() {
                 userRequests.splice(index, 1);
                 setUserRequests([...userRequests]);
             }
-            alert("Request accepted");
+            showSuccess.fire({
+              title: 'Request accepted'
+            });
         }
     })
     .catch(err => console.log(err))
@@ -56,7 +91,9 @@ function Requests() {
                 userRequests.splice(index, 1);
                 setUserRequests([...userRequests]);
             }
-            alert("Request has been cancelled");
+            showSuccess.fire({
+              title: 'Request has been cancelled'
+            });
           }
     })
     .catch(err => console.log(err))
