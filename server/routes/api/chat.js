@@ -9,10 +9,21 @@ const {
 
 router.use(auth.verifyToken);
 
-router.get("/:id", checkMember, (req, res, next) => {
-  const { chat } = req;
-  next(new OkResponse(chat));
-});
+router.get("/:id", (req,res, next) => {
+  const id = req.params.id;
+  if(!id) {
+    next(new BadRequestResponse('Provide user id'));
+  }
+  Chat.findOne({ participants: [id, req.user.id] }, (err, chat) => {
+    if(err) {
+      next(new BadRequestResponse(err.message));
+    }else if(!chat) {
+      next(new OkResponse([]));
+    }else if(chat) {
+      next(new OkResponse(chat));
+    }
+  })
+})
 
 router.post("/start", (req, res, next) => {
   const { id, message } = req.body;
