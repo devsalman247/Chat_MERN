@@ -74,7 +74,7 @@ router.post("/start", (req, res, next) => {
   });
 });
 
-router.delete("/delete", checkMember, (req, res, next) => {
+router.delete("/delete/:chatId", checkMember, (req, res, next) => {
   const { msgId } = req.body;
   if (!msgId) {
     next(
@@ -147,7 +147,7 @@ router.delete("/clear/:chatId", checkMember, (req, res, next) => {
   });
 });
 
-router.put("/update", checkMember, (req, res, next) => {
+router.put("/update/:chatId", checkMember, (req, res, next) => {
   const { msgId, message } = req.body;
   if ((!msgId, !message)) {
     next(
@@ -186,7 +186,7 @@ router.put("/update", checkMember, (req, res, next) => {
   }
 });
 
-router.get("/search", checkMember, (req, res, next) => {
+router.get("/search/:chatId", checkMember, (req, res, next) => {
   const { chat } = req;
   const { message } = req.body;
   const filteredChat = chat.messages.filter(
