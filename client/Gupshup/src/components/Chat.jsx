@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FaUserAlt } from "react-icons/fa";
+import {BiDotsVerticalRounded} from "react-icons/bi";
 import Messages from "./Messages";
 import axios from "axios";
 
@@ -11,7 +12,6 @@ function Chat() {
 
   function loadMessages(id) {
     setCurrentUser(id);
-    console.log(id);
     axios.get(`http://localhost:3000/api/chat/${id}`,{
       headers: { Authorization: `Token ${token}` },
     })
@@ -40,12 +40,15 @@ function Chat() {
             ? `You've no friends yet! Make new to chat`
             : friends.map((user, key) => {
                 return (
-                  <button className="block w-full" onClick={() => loadMessages(user.id)}>
-                    <div className="flex items-center py-2 pl-2 mt-4 hover:bg-slate-200 rounded-l-md">
+                  <button className="block w-full group" onClick={() => loadMessages(user.id)}>
+                    <div className="flex items-center py-2 pl-2 mt-4 hover:bg-slate-200 rounded-l-md" >
                       <FaUserAlt className="w-10 h-8" />
                       <div key={key} className="text-sm ml-3 text-start">
                         <span className="text-lg">{user.name}</span> <br />
-                        <span className="">{user.about}</span>
+                        <span className="truncate">{user.about}</span>
+                      </div>
+                      <div className="ml-auto hidden group-hover:block">
+                        <BiDotsVerticalRounded className="w-8 h-6"/>
                       </div>
                     </div>
                   </button>
