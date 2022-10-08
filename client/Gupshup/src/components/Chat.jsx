@@ -5,7 +5,6 @@ import Messages from "./Messages";
 import axios from "axios";
 
 function Chat() {
-  const [user, setUser] = useState("");
   const [friends, setFriends] = useState([]);
   const [messages, setMessages] = useState([]);
   const [chatId, setChatId] = useState("");

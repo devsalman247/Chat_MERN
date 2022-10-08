@@ -35,7 +35,6 @@ function Messages({ messages, setMessages, id, chatId, setChatId }) {
       })
       .then((res) => {
         if (res.status === 200) {
-          console.log(res);
         setMessages(res.data.data);
         }
       })

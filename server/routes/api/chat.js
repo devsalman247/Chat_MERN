@@ -20,7 +20,8 @@ router.get("/:id", (req, res, next) => {
       if (chat?.deletedBy?.includes(req.user.id)) {
         next(new OkResponse([]));
       }
-      next(new OkResponse(chat));
+      const filteredChat = chat.messages.filter(msg => !msg.deletedBy.includes(req.user.id))
+      next(new OkResponse({id : chat.id,messages : filteredChat}));
     }
   });
 });
@@ -96,9 +97,12 @@ router.delete("/delete/:chatId", checkMember, (req, res, next) => {
       if(err || !chatToUpdate) {
         next(new BadRequestResponse("Something went wrong"));
       }
-        chatToUpdate.messages[index].deletedBy.push(req.user.id);
-        if (chatToUpdate.messages[index].deletedBy.length === chatToUpdate.participants.length) {
-          chatToUpdate.messages.splice(index, 1);
+      const indexToDelete = chatToUpdate.messages.findIndex(
+        (obj) => obj.id === msgId && !obj.deletedBy.includes(req.user.id)
+      );
+        chatToUpdate.messages[indexToDelete].deletedBy.push(req.user.id);
+        if (chatToUpdate.messages[indexToDelete].deletedBy.length === chatToUpdate.participants.length) {
+          chatToUpdate.messages.splice(indexToDelete, 1);
         }
         chatToUpdate.save((err, deletedChat) => {
           if (err || !deletedChat) {
