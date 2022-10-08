@@ -14,7 +14,8 @@ function Chat() {
     axios.get(`http://localhost:3000/api/chat/${id}`,{
       headers: { Authorization: `Token ${token}` },
     })
-    .then((res) => setMessages(res.data.data.messages))
+    .then((res) => {setMessages(res.data.data.messages || [])
+    })
     .catch((err) => console.log(err));
   }
 
@@ -32,7 +33,7 @@ function Chat() {
       <h2 className="text-2xl text-center text-sky-500 font-medium mb-2">
         Let's Chat
       </h2>
-      <div className="w-1/2 bg-slate-100 m-auto rounded h-4/5 border-2 flex">
+      <div className="w-1/2 bg-slate-200 m-auto rounded h-4/5 border-2 flex">
         <div className="pt-1 pb-5 pl-2 w-1/3 h-full bg-white">
           {friends.length === 0
             ? `You've no friends yet! Make new to chat`

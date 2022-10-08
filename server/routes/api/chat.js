@@ -2,28 +2,25 @@ const router = require("express").Router(),
   auth = require("../auth"),
   checkMember = require("../../middlewares/isChatMember"),
   Chat = require("../../models/Chat");
-const {
-  OkResponse,
-  BadRequestResponse
-} = require("express-http-response");
+const { OkResponse, BadRequestResponse } = require("express-http-response");
 
 router.use(auth.verifyToken);
 
-router.get("/:id", (req,res, next) => {
+router.get("/:id", (req, res, next) => {
   const id = req.params.id;
-  if(!id) {
-    next(new BadRequestResponse('Provide user id'));
+  if (!id) {
+    next(new BadRequestResponse("Provide user id"));
   }
   Chat.findOne({ participants: [id, req.user.id] }, (err, chat) => {
-    if(err) {
+    if (err) {
       next(new BadRequestResponse(err.message));
-    }else if(!chat) {
+    } else if (!chat) {
       next(new OkResponse([]));
-    }else if(chat) {
+    } else if (chat) {
       next(new OkResponse(chat));
     }
-  })
-})
+  });
+});
 
 router.post("/start", (req, res, next) => {
   const { id, message } = req.body;
@@ -57,7 +54,7 @@ router.post("/start", (req, res, next) => {
       foundChat.messages.push({
         body: message,
         sentBy: req.user.id,
-        sentAt: Date.now(),
+        sentAt: new Date(),
       });
       const deletedChatFor = foundChat.deletedBy.indexOf(req.user.id);
       if (deletedChatFor > -1) {
