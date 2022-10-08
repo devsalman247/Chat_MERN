@@ -92,59 +92,79 @@ router.delete("/delete/:chatId", checkMember, (req, res, next) => {
       new BadRequestResponse({ error: { message: "Message is not present." } })
     );
   } else {
-    chat.messages[index].deletedBy.push(req.user.id);
-    if (chat.messages[index].deletedBy.length === chat.participants.length) {
-      chat.messages.splice(index, 1);
-    }
-    chat.save((err, deletedChat) => {
-      if (err) {
-        next(new BadRequestResponse({ error: { message: err.message } }));
-      } else {
-        next(
-          new OkResponse({
-            success: true,
-            message: "Message has been deleted successfully.",
-          })
-        );
+    Chat.findById(chat._id, (err, chatToUpdate) => {
+      if(err || !chatToUpdate) {
+        next(new BadRequestResponse("Something went wrong"));
       }
-    });
+        chatToUpdate.messages[index].deletedBy.push(req.user.id);
+        if (chatToUpdate.messages[index].deletedBy.length === chatToUpdate.participants.length) {
+          chatToUpdate.messages.splice(index, 1);
+        }
+        chatToUpdate.save((err, deletedChat) => {
+          if (err || !deletedChat) {
+            next(new BadRequestResponse({ error: { message: err.message } }));
+          } else {
+            const filteredChat = deletedChat.messages.filter(msg => !msg.deletedBy.includes(req.user.id))
+            next(
+              new OkResponse(filteredChat)
+            );
+          }
+        });
+      
+    })
   }
 });
 
 router.delete("/clear/:chatId", checkMember, (req, res, next) => {
   const { chat } = req;
   chat.deletedBy.push(req.user.id);
-  chat.messages.forEach((obj) => {
-    if (!obj.deletedBy.includes(req.user.id)) {
-      obj.deletedBy.push(req.user.id);
-      if (chat.deletedBy.length === chat.participants.length) {
-        Chat.findByIdAndDelete(chat.id, (err, deleted) => {
-          if (err) {
-            next(
-              new BadRequestResponse({
-                error: {
-                  message: "Chat couldn't be deleted. Please try again!!",
-                },
-              })
-            );
-          } else {
-            next(new OkResponse({ message: "chat deleted successfully" }));
+  if (chat.deletedBy.length === chat.participants.length) {
+    Chat.findByIdAndDelete(chat.id, (err, deleted) => {
+      if (err) {
+        next(
+          new BadRequestResponse({
+            error: {
+              message: "Chat couldn't be deleted. Please try again!!",
+            },
+          })
+        );
+      } else if(deleted) {
+        next(new OkResponse({ message: "chat deleted successfully" }));
+      }else if(!deleted) {
+        next(new BadRequestResponse('sorry'));
+      }
+    });
+  }else {
+    Chat.findById(chat.id, (err, chatToUpdate) => {
+      if(err) {
+        next(
+          new BadRequestResponse({
+            error: {
+              message: "Chat couldn't be deleted. Please try again!!",
+            },
+          })
+        );
+      }else if(!chatToUpdate) {
+        next(
+          new BadRequestResponse('Something went wrong')
+        );
+      }else {
+        chatToUpdate.deletedBy.push(req.user.id);
+        chatToUpdate.messages.forEach((obj) => {
+          if (!obj.deletedBy.includes(req.user.id)) {
+            obj.deletedBy.push(req.user.id);
           }
         });
-      }
-    }
-  });
-  chat.save((err) => {
-    if (err) {
-      next(
-        new BadRequestResponse({
-          message: "action can't be completed. Please try again!!",
+        chatToUpdate.save((err, success) => {
+          if(err) {
+            next(new BadRequestResponse('something wrong'));
+          }else {
+            next(new OkResponse(success));
+          }
         })
-      );
-    } else {
-      next(new OkResponse({ message: "chat deleted successfully" }));
-    }
-  });
+      }
+    })
+  }
 });
 
 router.put("/update/:chatId", checkMember, (req, res, next) => {

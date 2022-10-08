@@ -5,8 +5,10 @@ import Messages from "./Messages";
 import axios from "axios";
 
 function Chat() {
+  const [user, setUser] = useState("");
   const [friends, setFriends] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [chatId, setChatId] = useState("");
   const [currentUser, setCurrentUser] = useState('');
   const token = localStorage.getItem("chatToken");
 
@@ -15,7 +17,9 @@ function Chat() {
     axios.get(`http://localhost:3000/api/chat/${id}`,{
       headers: { Authorization: `Token ${token}` },
     })
-    .then((res) => {setMessages(res.data.data.messages || [])
+    .then((res) => {
+      setChatId(res.data.data.id);
+      setMessages(res.data.data.messages || [])
     })
     .catch((err) => console.log(err));
   }
@@ -55,7 +59,7 @@ function Chat() {
                 );
               })}
         </div>
-        <Messages messages={messages} setMessages={setMessages} id={currentUser}/>
+        <Messages messages={messages} setMessages={setMessages} id={currentUser} chatId={chatId} setChatId={setChatId}/>
       </div>
     </>
   );

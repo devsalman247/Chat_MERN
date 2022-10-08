@@ -1,18 +1,17 @@
 const Chat = require('../models/Chat');
+const { OkResponse, BadRequestResponse } = require("express-http-response");
 
 module.exports = function(req, res, next) {
     const {id} = req.user;
     const {chatId} = req.params;
     if(!chatId) {
-        res.send({error : {message : "Please provide chat id to proceed."}});
+        next(new BadRequestResponse({error : {message : "Please provide chat id to proceed."}}));
     }else {
         Chat.findById(chatId, (err, chat) => {
-            if(err) {
-                res.send({error : {message : err.message}});
-            }else if(!chat) {
-                res.send({error : {message : "Chat not found!"}});
+            if(err || !chat) {
+                next(new BadRequestResponse({error : {message : err.message}}));
             }else if(chat?.deletedBy?.includes(req.user.id)) {
-                res.send({message : "No message "});
+                next(new OkResponse([]));
             }else {
                 if(chat.participants.includes(id)) {
                     const filteredChat = chat; 
