@@ -2,7 +2,7 @@ const Chat = require('../models/Chat');
 
 module.exports = function(req, res, next) {
     const {id} = req.user;
-    const chatId = req.params.id;
+    const {chatId} = req.params;
     if(!chatId) {
         res.send({error : {message : "Please provide chat id to proceed."}});
     }else {

@@ -11,12 +11,15 @@ router.get("/:id", (req, res, next) => {
   if (!id) {
     next(new BadRequestResponse("Provide user id"));
   }
-  Chat.findOne({ participants: [id, req.user.id] }, (err, chat) => {
+  Chat.findOne({ participants: { $all: [id, req.user.id] } }, (err, chat) => {
     if (err) {
       next(new BadRequestResponse(err.message));
     } else if (!chat) {
       next(new OkResponse([]));
     } else if (chat) {
+      if (chat?.deletedBy?.includes(req.user.id)) {
+        next(new OkResponse([]));
+      }
       next(new OkResponse(chat));
     }
   });
@@ -31,7 +34,7 @@ router.post("/start", (req, res, next) => {
       })
     );
   }
-  Chat.findOne({ participants: [id, req.user.id] }, (err, foundChat) => {
+  Chat.findOne({ participants: { $all: [id, req.user.id] } }, (err, foundChat) => {
     if (err) {
       next(new BadRequestResponse({ error: { message: err.message } }));
     } else if (!foundChat) {
@@ -108,7 +111,7 @@ router.delete("/delete", checkMember, (req, res, next) => {
   }
 });
 
-router.delete("/clear", checkMember, (req, res, next) => {
+router.delete("/clear/:chatId", checkMember, (req, res, next) => {
   const { chat } = req;
   chat.deletedBy.push(req.user.id);
   chat.messages.forEach((obj) => {

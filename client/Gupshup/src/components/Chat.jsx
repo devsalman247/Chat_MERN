@@ -11,6 +11,7 @@ function Chat() {
 
   function loadMessages(id) {
     setCurrentUser(id);
+    console.log(id);
     axios.get(`http://localhost:3000/api/chat/${id}`,{
       headers: { Authorization: `Token ${token}` },
     })

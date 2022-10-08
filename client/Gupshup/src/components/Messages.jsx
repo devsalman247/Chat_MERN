@@ -1,7 +1,7 @@
 import { BiSend } from "react-icons/bi";
 import axios from "axios";
 import moment from "moment";
-import { useRef,useEffect } from "react";
+import { useRef, useEffect } from "react";
 
 function Messages({ messages, setMessages, id }) {
   const ref = useRef();
@@ -25,6 +25,34 @@ function Messages({ messages, setMessages, id }) {
     msgInput.value = "";
   }
 
+  function checkUser(msg,key) {
+    if (id !== msg.sentBy) {
+      return (
+        <div
+          key={key}
+          className="bg-white text-black text-right py-3 px-3 my-2 ml-auto max-w-fit break-words rounded"
+        >
+          {msg.body}
+          <div className="text-xs">
+            {moment(msg.sentAt).local().format("hh:mm")}
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div
+          key={key}
+          className="bg-sky-500 text-white py-3 px-3 my-2 max-w-fit break-words rounded"
+        >
+          {msg.body}
+          <div className="text-xs">
+            {moment(msg.sentAt).local().format("hh:mm")}
+          </div>
+        </div>
+      );
+    }
+  }
+
   useEffect(() => {
     ref.current.scrollIntoView();
   }, [messages]);
@@ -32,17 +60,13 @@ function Messages({ messages, setMessages, id }) {
   return (
     <div className="w-full max-w-[500px]">
       <div className="h-5/6 mt-2 px-4 overflow-y-auto">
-        {messages.length === 0
-          ? <div className="text-black text-xl h-full flex justify-center items-center">No messages to show!</div>
-          : messages.map((msg, key) => (
-              <div
-                key={key}
-                className="bg-white text-black text-right py-3 px-3 my-2 ml-auto max-w-fit break-words rounded"
-              >
-                {msg.body}
-                <div className="text-xs">{moment(msg.sentAt).local().format('DD/MM/YY hh:mm')}</div>
-              </div>
-            ))}
+        {messages.length === 0 ? (
+          <div className="text-black text-xl h-full flex justify-center items-center">
+            No messages to show!
+          </div>
+        ) : (
+          messages.map((msg, key) => checkUser(msg, key))
+        )}
 
         <div ref={ref}></div>
       </div>
