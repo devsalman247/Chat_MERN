@@ -5,12 +5,17 @@ import moment from "moment";
 import { useRef, useEffect } from "react";
 import { useState } from "react";
 
-function Messages({ messages, setMessages, id, chatId, setChatId }) {
+function Messages({ messages, setMessages, id, chatId, setChatId, socket }) {
   const token = localStorage.getItem("chatToken");
   const ref = useRef();
-  function sendMessage() {
+
+  async function joinFriend() {
+    await socket.emit("join", chatId);
+  }
+
+  async function sendMessage() {
     const msgInput = document.getElementById("msgInput");
-    axios
+    await axios
       .post(
         `http://localhost:3000/api/chat/start`,
         {
@@ -22,6 +27,7 @@ function Messages({ messages, setMessages, id, chatId, setChatId }) {
       .then((res) => {
         setChatId(res.data.data.chat.id);
         setMessages(res.data.data.chat.messages);
+        socket.emit("send", { chatId, message: msgInput.value });
       })
       .catch((err) => console.log(err));
     msgInput.value = "";
@@ -35,7 +41,7 @@ function Messages({ messages, setMessages, id, chatId, setChatId }) {
       })
       .then((res) => {
         if (res.status === 200) {
-        setMessages(res.data.data);
+          setMessages(res.data.data);
         }
       })
       .catch((err) => console.log(err));
@@ -55,6 +61,20 @@ function Messages({ messages, setMessages, id, chatId, setChatId }) {
   }
 
   useEffect(() => {
+    const handler = async (data) => {
+      console.log(data);
+      const message = await data.message;
+      console.log(message);
+      if (data.chatId === chatId) {
+        await setMessages((messages) => [...messages, message]);
+      }
+    };
+    socket.on("receive", handler);
+    return () => socket.off("receive", handler);
+  }, []);
+
+  useEffect(() => {
+    joinFriend(chatId);
     ref.current.scrollIntoView();
   }, [messages]);
 

@@ -1,26 +1,30 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { FaUserAlt } from "react-icons/fa";
-import {BiDotsVerticalRounded} from "react-icons/bi";
+import { BiDotsVerticalRounded } from "react-icons/bi";
 import Messages from "./Messages";
 import axios from "axios";
+import io from "socket.io-client";
+
+const socket = io.connect("http://localhost:3000");
 
 function Chat() {
   const [friends, setFriends] = useState([]);
   const [messages, setMessages] = useState([]);
   const [chatId, setChatId] = useState("");
-  const [currentUser, setCurrentUser] = useState('');
+  const [currentUser, setCurrentUser] = useState("");
   const token = localStorage.getItem("chatToken");
 
   function loadMessages(id) {
     setCurrentUser(id);
-    axios.get(`http://localhost:3000/api/chat/${id}`,{
-      headers: { Authorization: `Token ${token}` },
-    })
-    .then((res) => {
-      setChatId(res.data.data.id);
-      setMessages(res.data.data.messages || [])
-    })
-    .catch((err) => console.log(err));
+    axios
+      .get(`http://localhost:3000/api/chat/${id}`, {
+        headers: { Authorization: `Token ${token}` },
+      })
+      .then((res) => {
+        setChatId(res.data.data.id);
+        setMessages(res.data.data.messages || []);
+      })
+      .catch((err) => console.log(err));
   }
 
   useEffect(() => {
@@ -43,22 +47,32 @@ function Chat() {
             ? `You've no friends yet! Make new to chat`
             : friends.map((user, key) => {
                 return (
-                  <button className="block w-full group" onClick={() => loadMessages(user.id)}>
-                    <div className="flex items-center py-2 pl-2 mt-4 hover:bg-slate-200 rounded-l-md" >
+                  <button
+                    className="block w-full group"
+                    onClick={() => loadMessages(user.id)}
+                  >
+                    <div className="flex items-center py-2 pl-2 mt-4 hover:bg-slate-200 rounded-l-md">
                       <FaUserAlt className="w-10 h-8" />
                       <div key={key} className="text-sm ml-3 text-start">
                         <span className="text-lg">{user.name}</span> <br />
                         <span className="truncate">{user.about}</span>
                       </div>
                       <div className="ml-auto hidden group-hover:block">
-                        <BiDotsVerticalRounded className="w-8 h-6"/>
+                        <BiDotsVerticalRounded className="w-8 h-6" />
                       </div>
                     </div>
                   </button>
                 );
               })}
         </div>
-        <Messages messages={messages} setMessages={setMessages} id={currentUser} chatId={chatId} setChatId={setChatId}/>
+        <Messages
+          messages={messages}
+          setMessages={setMessages}
+          id={currentUser}
+          chatId={chatId}
+          setChatId={setChatId}
+          socket={socket}
+        />
       </div>
     </>
   );

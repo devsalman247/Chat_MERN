@@ -4,6 +4,7 @@ const express = require("express"),
   cors = require("cors"),
   mongoose = require("mongoose"),
   httpResponse = require("express-http-response"),
+  {Server} = require("socket.io"),
   PORT = process.env.PORT || 3000;
 
 mongoose
@@ -31,6 +32,29 @@ app.use(cors());
 app.use(router);
 app.use(httpResponse.Middleware);
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Listening at port ${PORT}.`);
+});
+
+const io = new Server(server, {
+  cors : {
+    origin : "http://localhost:5173"
+  }
+});
+
+io.on("connection", (socket) => {
+  console.log(`${socket.id} user connected`);
+
+  socket.on('send', (data) => {
+    socket.to(data.chatId).emit('receive', data);
+    console.log(data)
+  })
+
+  socket.on('join', (chatId) => {
+    socket.join(chatId);
+  })
+
+  socket.on("disconnect", () => {
+    console.log(`${socket.id} user disconnected`);
+  })
 });
