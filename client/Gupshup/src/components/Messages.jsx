@@ -63,10 +63,8 @@ function Messages({ messages, setMessages, id, chatId, setChatId, socket }) {
   useEffect(() => {
     const handler = async (data) => {
       console.log(data);
-      const message = await data.message;
-      console.log(message);
       if (data.chatId === chatId) {
-        await setMessages((messages) => [...messages, message]);
+        await setMessages((messages) => [...messages, data.message]);
       }
     };
     socket.on("receive", handler);
