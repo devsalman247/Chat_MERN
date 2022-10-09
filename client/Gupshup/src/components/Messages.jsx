@@ -5,7 +5,7 @@ import moment from "moment";
 import { useRef, useEffect } from "react";
 import { useState } from "react";
 
-function Messages({ messages, setMessages, id, chatId, setChatId, socket }) {
+function Messages({ messages, setMessages, id, chatId, setChatId, socket, loadMessages }) {
   const token = localStorage.getItem("chatToken");
   const ref = useRef();
 
@@ -62,9 +62,8 @@ function Messages({ messages, setMessages, id, chatId, setChatId, socket }) {
 
   useEffect(() => {
     const handler = async (data) => {
-      console.log(data);
       if (data.chatId === chatId) {
-        await setMessages((messages) => [...messages, data.message]);
+        await loadMessages(id)
       }
     };
     socket.on("receive", handler);

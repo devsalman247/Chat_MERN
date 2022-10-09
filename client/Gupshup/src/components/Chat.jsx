@@ -65,14 +65,15 @@ function Chat() {
                 );
               })}
         </div>
-        <Messages
+        {chatId && <Messages
           messages={messages}
           setMessages={setMessages}
           id={currentUser}
           chatId={chatId}
           setChatId={setChatId}
           socket={socket}
-        />
+          loadMessages={loadMessages}
+        />}
       </div>
     </>
   );
