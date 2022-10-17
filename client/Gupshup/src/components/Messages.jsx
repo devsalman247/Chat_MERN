@@ -3,7 +3,6 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import axios from "axios";
 import moment from "moment";
 import { useRef, useEffect } from "react";
-import { useState } from "react";
 
 function Messages({ messages, setMessages, id, chatId, setChatId, socket, loadMessages }) {
   const token = localStorage.getItem("chatToken");
